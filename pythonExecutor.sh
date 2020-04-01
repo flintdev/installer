@@ -119,7 +119,7 @@ installPythonAndVirtualEnv(){
   pyenv install 3.7.3
   pyenv virtualenv 3.7.3 flint-virtual-env
   pyenv activate flint-virtual-env &> /dev/null
-  pip install flint-python-executor==0.3.0
+  pip install flint-python-executor
   echo "flint python virtual environment is ready"
 }
 
@@ -159,7 +159,7 @@ checkIfAvailablePythonVersion() {
     else
       pyenv virtualenv "$avaliableVersion" flint-virtual-env
       pyenv activate flint-virtual-env
-      pip install flint-python-executor==0.3.0
+      pip install flint-python-executor
       echo "flint python virtual environment is ready"
     fi
   else
