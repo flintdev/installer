@@ -245,7 +245,7 @@ case $opt in
       start
     ;;
     "upgrade")
-      echo 'upgrade'
+      upgrade
     ;;
     *)
       echo "Incorrect usage!"
