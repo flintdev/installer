@@ -248,6 +248,17 @@ runCluster() {
 }
 
 checkIfGVMHasAvailableVersion () {
+  findAvailableGoVersion
+  availableGoVersion=$?
+  # use latest available version or install go1.13.5
+  if [ "$availableGoVersion" == "1" ]; then
+    installGoBaseVersion
+  else
+    gvm use "go$availableGoVersion"
+  fi
+}
+
+findAvailableGoVersion() {
   baseVersion="1.13"
   # Get current avaliable version in gvm
   curentVersionArray=()
@@ -276,9 +287,10 @@ checkIfGVMHasAvailableVersion () {
   # use latest available version or install go1.13.5
   if [ "${#availableVersionArray[@]}" -gt 0 ]; then
     avaliableVersion=${availableVersionArray[${#availableVersionArray[@]}-1]}
-    gvm use "go$avaliableVersion"
+    return "$avaliableVersion"
   else
-    installGoBaseVersion
+    echo "Canot find go version >= $baseVersion"
+    exit 1
   fi
 }
 
@@ -330,39 +342,29 @@ install() {
 
 # start workflow flow engine
 start() {
-  baseVersion="1.13"
-  # Get current avaliable version in gvm
-  curentVersionArray=()
-  availableVersionArray=()
-
-  # shellcheck source=src/lib.sh
-  source "$HOME/.gvm/scripts/gvm"
-  while read -r line
-  do
-    goVersion=$(echo "$line" | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/')
-    if [ ! "$goVersion" == "" ]; then
-      curentVersionArray+=("$goVersion")
-    fi
-  done < <( gvm list | grep -v ^$ )
-
-  # get all version higher than 1.13
-  for i in "${curentVersionArray[@]}"
-  do :
-  vercomp "$i" "$baseVersion"
-  result=$?
-  if [ ! "$result" == "2" ]; then
-    availableVersionArray+=("$i")
-  fi
-  done
-
+  findAvailableGoVersion
+  availableGoVersion=$?
   # use latest available version
-  if [ "${#availableVersionArray[@]}" -gt 0 ]; then
-    avaliableVersion=${availableVersionArray[${#availableVersionArray[@]}-1]}
-    gvm use "go$avaliableVersion"
-    go run ./main.go
-  else
+  if [ "$availableGoVersion" == "1" ]; then
     echo "Canot find go version >= $baseVersion"
     exit 1
+  else
+    gvm use "go$availableGoVersion"
+    go run ./main.go
+  fi
+}
+
+# upgrade workflow flow engine
+upgrade() {
+  findAvailableGoVersion
+  availableGoVersion=$?
+  # use latest available version
+  if [ "$availableGoVersion" == "1" ]; then
+    echo "Canot find go version >= $baseVersion"
+    exit 1
+  else
+    gvm use "go$availableGoVersion"
+    go run ./main.go
   fi
 }
 
