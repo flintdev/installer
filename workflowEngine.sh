@@ -248,10 +248,9 @@ runCluster() {
 }
 
 checkIfGVMHasAvailableVersion () {
-  findAvailableGoVersion
-  availableGoVersion=$?
+  availableGoVersion=$(findAvailableGoVersion)
   # use latest available version or install go1.13.5
-  if [ "$availableGoVersion" == "1" ]; then
+  if [ "$availableGoVersion" == "unknown" ]; then
     installGoBaseVersion
   else
     gvm use "go$availableGoVersion"
@@ -265,7 +264,7 @@ findAvailableGoVersion() {
   availableVersionArray=()
 
   # shellcheck source=src/lib.sh
-  source "$HOME/.gvm/scripts/gvm"
+  source "$HOME/.gvm/scripts/gvm" &> /dev/null
   while read -r line
   do
     goVersion=$(echo "$line" | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/')
@@ -287,10 +286,9 @@ findAvailableGoVersion() {
   # use latest available version or install go1.13.5
   if [ "${#availableVersionArray[@]}" -gt 0 ]; then
     avaliableVersion=${availableVersionArray[${#availableVersionArray[@]}-1]}
-    return "$avaliableVersion"
+    echo "$avaliableVersion"
   else
-    echo "Canot find go version >= $baseVersion"
-    exit 1
+    echo "false"
   fi
 }
 
@@ -342,13 +340,14 @@ install() {
 
 # start workflow flow engine
 start() {
-  findAvailableGoVersion
-  availableGoVersion=$?
+  availableGoVersion=$(findAvailableGoVersion)
   # use latest available version
-  if [ "$availableGoVersion" == "1" ]; then
+  if [ "$availableGoVersion" == "false" ]; then
     echo "Canot find go version >= $baseVersion"
     exit 1
   else
+    # shellcheck source=src/lib.sh
+    source "$HOME/.gvm/scripts/gvm"
     gvm use "go$availableGoVersion"
     go run ./main.go
   fi
@@ -356,13 +355,14 @@ start() {
 
 # upgrade workflow flow engine
 upgrade() {
-  findAvailableGoVersion
-  availableGoVersion=$?
+  availableGoVersion=$(findAvailableGoVersion)
   # use latest available version
-  if [ "$availableGoVersion" == "1" ]; then
+  if [ "$availableGoVersion" == "false" ]; then
     echo "Canot find go version >= $baseVersion"
     exit 1
   else
+    # shellcheck source=src/lib.sh
+    source "$HOME/.gvm/scripts/gvm"
     gvm use "go$availableGoVersion"
     go run ./main.go
   fi
