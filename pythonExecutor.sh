@@ -227,6 +227,7 @@ upgrade() {
   activateStatus=$?
   if [ "$activateStatus" == "0" ]; then
     pip install flint-python-executor --upgrade
+    pip freeze > requiremtns.txt
   else
     echo "Cannot find pyenv virtual environment flint-virtual-env"
     exit 1
