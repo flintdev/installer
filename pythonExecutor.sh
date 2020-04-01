@@ -54,7 +54,7 @@ check() {
   checkIsPyenvInstalled
   checkIsPyenvVirtualenvInstalled
   checkIsZlibInstalled
-  outputJson
+  outputCheckJson
 }
 
 # Install dependencies
