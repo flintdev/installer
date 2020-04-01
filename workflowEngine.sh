@@ -364,7 +364,7 @@ upgrade() {
     # shellcheck source=src/lib.sh
     source "$HOME/.gvm/scripts/gvm"
     gvm use "go$availableGoVersion"
-    go run ./main.go
+    go get github.com/flintdev/workflow-engine
   fi
 }
 
@@ -387,7 +387,7 @@ case $opt in
       start
     ;;
     "upgrade")
-      echo 'upgrade'
+      upgrade
     ;;
     *)
       echo "Incorrect usage!"
