@@ -217,7 +217,14 @@ start() {
 
 # upgrade python executor
 upgrade() {
-  echo "upgrade"
+  pyenv activate flint-virtual-env &> /dev/null
+  activateStatus=$?
+  if [ "$activateStatus" == "0" ]; then
+    pip install flint-python-executor --upgrade
+  else
+    echo "Cannot find pyenv virtual environment flint-virtual-env"
+    exit 1
+  fi
 }
 
 if [[ $# -ne 1 ]]; then
