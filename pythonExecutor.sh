@@ -114,6 +114,8 @@ installPyenvVirtualenv() {
 }
 
 installPythonAndVirtualEnv(){
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
   pyenv install 3.7.3
   pyenv virtualenv 3.7.3 flint-virtual-env
   pyenv activate flint-virtual-env &> /dev/null
@@ -205,6 +207,8 @@ install() {
 
 # start python executor
 start() {
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
   pyenv activate flint-virtual-env &> /dev/null
   activateStatus=$?
   if [ "$activateStatus" == "0" ]; then
@@ -217,6 +221,8 @@ start() {
 
 # upgrade python executor
 upgrade() {
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
   pyenv activate flint-virtual-env &> /dev/null
   activateStatus=$?
   if [ "$activateStatus" == "0" ]; then
