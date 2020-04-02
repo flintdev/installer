@@ -3,7 +3,7 @@
 #####################################
 # Author: Gaoxin Dai
 # Version: v1.0.0
-# Description: Command-line utility for administrative tasks
+# Description: Command-line utility for python executor administrative tasks
 # Usage: ./manage.sh <check|install|start|upgrade>
 #####################################
 
