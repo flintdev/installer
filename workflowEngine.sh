@@ -352,6 +352,7 @@ start() {
     # shellcheck source=src/lib.sh
     source "$HOME/.gvm/scripts/gvm"
     gvm use "go$availableGoVersion"
+    go get -u github.com/flintdev/workflow-engine
     go run ./main.go
   fi
 }
@@ -368,7 +369,7 @@ upgrade() {
     # shellcheck source=src/lib.sh
     source "$HOME/.gvm/scripts/gvm"
     gvm use "go$availableGoVersion"
-    go get github.com/flintdev/workflow-engine
+    go get -u github.com/flintdev/workflow-engine
   fi
 }
 
