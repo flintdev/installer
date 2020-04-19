@@ -254,6 +254,8 @@ checkIfGVMHasAvailableVersion () {
   # use latest available version or install go1.13.5
   if [ "$availableGoVersion" == "unknown" ]; then
     installGoBaseVersion
+  elif [ "$availableGoVersion" == "false" ]; then
+    installGoBaseVersion
   else
     gvm use "go$availableGoVersion"
   fi
