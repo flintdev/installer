@@ -249,6 +249,8 @@ runCluster() {
 
 checkIfGVMHasAvailableVersion () {
   availableGoVersion=$(findAvailableGoVersion)
+  echo "availableGoVersion is"
+  echo "$availableGoVersion"
   # use latest available version or install go1.13.5
   if [ "$availableGoVersion" == "unknown" ]; then
     installGoBaseVersion
@@ -340,10 +342,11 @@ install() {
 
 # start workflow flow engine
 start() {
+  baseVersion="1.13"
   availableGoVersion=$(findAvailableGoVersion)
   # use latest available version
   if [ "$availableGoVersion" == "false" ]; then
-    echo "Canot find go version >= $baseVersion"
+    echo "Cannot find go version >= $baseVersion"
     exit 1
   else
     # shellcheck source=src/lib.sh
@@ -355,10 +358,11 @@ start() {
 
 # upgrade workflow flow engine
 upgrade() {
+  baseVersion="1.13"
   availableGoVersion=$(findAvailableGoVersion)
   # use latest available version
   if [ "$availableGoVersion" == "false" ]; then
-    echo "Canot find go version >= $baseVersion"
+    echo "Cannot find go version >= $baseVersion"
     exit 1
   else
     # shellcheck source=src/lib.sh
