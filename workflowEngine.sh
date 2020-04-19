@@ -249,8 +249,6 @@ runCluster() {
 
 checkIfGVMHasAvailableVersion () {
   availableGoVersion=$(findAvailableGoVersion)
-  echo "availableGoVersion is"
-  echo "$availableGoVersion"
   # use latest available version or install go1.13.5
   if [ "$availableGoVersion" == "unknown" ]; then
     installGoBaseVersion
