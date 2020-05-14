@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  ui:
+    image: flintdev/flint-ui
+    command: npm start
+    working_dir: /application/ui
+    volumes:
+      - ./:/application
+      - ~/.kube/config:/root/.kube/config
+    network_mode: host
+
+  workflow-engine:
+    image: flintdev/flint-workflow-engine
+    command: go run main.go
+    working_dir: /application/controllers/workflowEngine
+    volumes:
+      - ./:/application
+      - ~/.kube/config:/root/.kube/config
+      - tmp:/tmp
+    network_mode: host
+
+  python-executor:
+    image: flintdev/flint-python-executor
+    command: python app.py
+    working_dir: /application/controllers/executors
+    environment:
+      DEBUG: "true"
+    volumes:
+      - ./:/application
+      - ~/.kube/config:/root/.kube/config
+      - tmp:/tmp
+    network_mode: host
+
+  admin-service:
+    image: flintdev/flint-admin-service
+    command: python app.py
+    working_dir: /application/controllers/admin
+    environment:
+      DEBUG: "true"
+    volumes:
+      - ./:/application
+      - ~/.kube/config:/root/.kube/config
+    network_mode: host
+
+volumes:
+  tmp:
+
