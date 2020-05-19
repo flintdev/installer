@@ -1,19 +1,32 @@
 version: '3'
 
 services:
-  ui:
+  ui-install-build:
     image: flintdev/flint-ui
-    command: npm start
-    working_dir: /application/ui
+    command: bash -c "npm install && npm run build-dev"
+    working_dir: /application/src/ui
     volumes:
       - ./:/application
       - ~/.kube/config:/root/.kube/config
-    network_mode: host
+
+  ui:
+    image: flintdev/flint-ui
+    command:  ./wait-for-ui-install-builder.sh -- node /application/dist/server.js
+    working_dir: /app
+    volumes:
+      - ./:/application
+      - ~/.kube/config:/root/.kube/config
+    depends_on:
+      - ui-install-build
+    expose:
+      - 8000
+    ports:
+    - 8000:8000
 
   workflow-engine:
     image: flintdev/flint-workflow-engine
-    command: go run main.go
-    working_dir: /application/controllers/workflowEngine
+    command: bash -c "go get github.com/githubnemo/CompileDaemon && CompileDaemon -directory=/application/src/controllers/workflowEngine -build='go build main.go' -command='./main'"
+    working_dir: /application/src/controllers/workflowEngine
     volumes:
       - ./:/application
       - ~/.kube/config:/root/.kube/config
@@ -23,7 +36,7 @@ services:
   python-executor:
     image: flintdev/flint-python-executor
     command: python app.py
-    working_dir: /application/controllers/executors
+    working_dir: /application/src/controllers/executors
     environment:
       DEBUG: "true"
     volumes:
@@ -35,12 +48,20 @@ services:
   admin-service:
     image: flintdev/flint-admin-service
     command: python app.py
-    working_dir: /application/controllers/admin
+    working_dir: /application/src/controllers/admin
     environment:
       DEBUG: "true"
     volumes:
       - ./:/application
       - ~/.kube/config:/root/.kube/config
+    network_mode: host
+
+  watcher:
+    image: flintdev/flint-service-watcher
+    volumes:
+      - ./:/application
+    working_dir: /application
+    command: python /app/watcher.py
     network_mode: host
 
 volumes:

@@ -1,1 +1,4 @@
 FROM node:14-alpine
+RUN apk add --no-cache bash
+COPY ./wait-for-ui-install-builder.sh /app/wait-for-ui-install-builder.sh
+RUN chmod +x /app/wait-for-ui-install-builder.sh
