@@ -2,11 +2,15 @@ import socket
 import os
 import json
 import time
+import requests
 
 PYTHON_EXECUTOR_PORT = 8080
 ADMIN_SERVICE_PORT = 5000
 WORKFLOW_ENGINE_PORT = 9090
 UI_PORT = 8000
+
+HEALTH_CHECK_URL_SUFFIX = "/health"
+HEALTH_CHECK_PORT = "8080"
 
 def is_port_in_use(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -37,13 +41,13 @@ def check_ui():
         json.dump(data, output_file)
 
 def check_python_executor():
-    if is_port_in_use(PYTHON_EXECUTOR_PORT):
-        status = "up"
-    else:
-        status = "down"
-
     with open('.runtime/status.json', 'r') as json_file:
         data = json.load(json_file)
+        port = data["python-executor"]["port"]
+        if port == "unknown":
+            status = "unavailable"
+        else:
+            status = health_check(port)
         data["python-executor"]["status"] = status
     with open('.runtime/status.json', 'w') as output_file:
         json.dump(data, output_file)
@@ -67,29 +71,46 @@ def init_status():
         with open('.runtime/status.json', 'w') as outfile:
             init_data = {
                 "ui": {
-                    "status": "down"
+                    "status": "unavailable",
+                    "port": "unknown"
                 },
                 "workflow-engine": {
-                    "status": "down"
+                    "status": "unavailable",
+                    "port": "unknown"
                 },
                 "python-executor": {
-                    "status": "down"
+                    "status": "unavailable",
+                    "port": "unknown"
                 },
                 "admin-service": {
-                    "status": "down"
+                    "status": "unavailable",
+                    "port": "unknown"
                 }
             }
             json.dump(init_data, outfile)
 
+def health_check(port):
+    try:
+        r = requests.get("http://localhost:{}}/health".format(port))
+        r_json = r.json()
+        status = r_json["status"]
+        if status == "available":
+            return "available"
+        else:
+            return "unavailable"
+    except Exception as e:
+        print(e)
+        return "unavailable"
+
+
 def watcher():
+    init_status()
     while True:
-        init_status()
-        check_ui()
         check_python_executor()
-        check_workflow_engine()
-        check_admin_service()
+        # check_ui()
+        # check_workflow_engine()
+        # check_admin_service()
         time.sleep(2)
 
 if __name__ == "__main__":
     watcher()
-
