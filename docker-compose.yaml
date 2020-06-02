@@ -20,7 +20,7 @@ services:
       - docker_network
     volumes:
       - ./:/application
-      - ~/.kube/config:/root/.kube/config
+      - root:/root
 
   ui:
     image: flintdev/flint-ui
@@ -30,7 +30,7 @@ services:
       - docker_network
     volumes:
       - ./:/application
-      - ~/.kube/config:/root/.kube/config
+      - root:/root
     depends_on:
       - ui-install-build
     ports:
@@ -44,7 +44,7 @@ services:
       - docker_network
     volumes:
       - ./:/application
-      - ~/.kube/config:/root/.kube/config
+      - root:/root
 
   python-executor:
     image: flintdev/flint-python-executor
