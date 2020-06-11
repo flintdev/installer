@@ -1,11 +1,12 @@
-version: '3.8'
+version: '3'
 
 services:
   kind:
     image: flintdev/flint-kind-dind
     privileged: true
-    command: bash -c "while true; do echo hello; sleep 2; done"
+    command: python3 /app/flint-kind-health-check.py
     volumes:
+      - ./:/application
       - root:/root
     expose:
       - 8000
@@ -31,10 +32,12 @@ services:
     volumes:
       - ./:/application
       - root:/root
+    expose:
+      - 8080
     depends_on:
       - ui-install-build
     ports:
-      - 9090:8080
+      - 9090:8000
 
   workflow-engine:
     image: flintdev/flint-workflow-engine
@@ -42,6 +45,8 @@ services:
     working_dir: /application/src/controllers/workflowEngine
     networks:
       - docker_network
+    expose:
+      - 8080
     volumes:
       - ./:/application
       - root:/root
